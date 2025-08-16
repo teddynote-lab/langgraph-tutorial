@@ -1,0 +1,30 @@
+[project]
+name = "LangGraph-Tutorial"
+version = "0.1.0"
+description = "한국어 버전의 LangGraph 튜토리얼"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "faiss-cpu>=1.11.0.post1",
+    "fastmcp>=2.11.3",
+    "grandalf>=0.8",
+    "jupyter>=1.1.1",
+    "langchain>=0.3.27",
+    "langchain-chroma>=0.2.3",
+    "langchain-community>=0.3.27",
+    "langchain-experimental>=0.3.4",
+    "langchain-mcp-adapters>=0.1.9",
+    "langchain-openai>=0.3.28",
+    "langchain-tavily>=0.2.11",
+    "langchain-teddynote>=0.4",
+    "langgraph>=0.5.4",
+    "langgraph-checkpoint-postgres>=2.0.23",
+    "mcp>=1.12.4",
+    "notebook>=7.4.4",
+    "pandas>=2.3.1",
+    "pdfplumber>=0.11.7",
+    "psycopg[binary,pool]>=3.2.9",
+    "python-dotenv>=1.1.1",
+    "rank-bm25>=0.2.2",
+    "unstructured>=0.18.11",
+]
