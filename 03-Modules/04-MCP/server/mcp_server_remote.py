@@ -1,37 +1,47 @@
 from fastmcp import FastMCP
+from typing import Optional
+import pytz
+from datetime import datetime
 
 mcp = FastMCP(
-    "Weather",  # Name of the MCP server
-    instructions="You are a weather assistant that can answer questions about the weather in a given location.",  # Instructions for the LLM on how to use this tool
-    host="0.0.0.0",  # Host address (0.0.0.0 allows connections from any IP)
-    port=8005,  # Port number for the server
+    "Current Time",  # Name of the MCP server
+    instructions="Information about the current time in a given timezone",  # Instructions for the LLM on how to use this tool
 )
 
 
 @mcp.tool()
-async def get_weather(location: str) -> str:
+async def get_current_time(timezone: Optional[str] = "Asia/Seoul") -> str:
     """
-    Get current weather information for the specified location.
+    Get current time information for the specified timezone.
 
-    This function simulates a weather service by returning a fixed response.
-    In a production environment, this would connect to a real weather API.
+    This function returns the current system time for the requested timezone.
 
     Args:
-        location (str): The name of the location (city, region, etc.) to get weather for
+        timezone (str, optional): The timezone to get current time for. Defaults to "Asia/Seoul".
 
     Returns:
-        str: A string containing the weather information for the specified location
+        str: A string containing the current time information for the specified timezone
     """
-    # Return a mock weather response
-    # In a real implementation, this would call a weather API
-    return f"It's always Sunny in {location}"
+    try:
+        # Get the timezone object
+        tz = pytz.timezone(timezone)
+
+        # Get current time in the specified timezone
+        current_time = datetime.now(tz)
+
+        # Format the time as a string
+        formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S %Z")
+
+        return f"Current time in {timezone} is: {formatted_time}"
+    except pytz.exceptions.UnknownTimeZoneError:
+        return f"Error: Unknown timezone '{timezone}'. Please provide a valid timezone."
+    except Exception as e:
+        return f"Error getting time: {str(e)}"
 
 
 if __name__ == "__main__":
     # Print a message indicating the server is starting
     print("mcp remote server is running...")
 
-    # Start the MCP server with SSE transport
-    # Server-Sent Events (SSE) transport allows the server to communicate with clients
-    # over HTTP, making it suitable for remote/distributed deployments
-    mcp.run(transport="streamable-http")
+    # start the server
+    mcp.run(transport="streamable-http", port=8002)

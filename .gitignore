@@ -9,6 +9,8 @@ wheels/
 
 .DS_Store
 
+02-Solution/
+
 # Virtual environments
 .venv
 uv.lock

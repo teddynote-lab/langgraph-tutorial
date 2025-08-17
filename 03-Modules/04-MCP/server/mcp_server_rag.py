@@ -5,57 +5,30 @@ from langchain_openai import OpenAIEmbeddings
 from mcp.server.fastmcp import FastMCP
 from dotenv import load_dotenv
 from typing import Any
+from rag.pdf import PDFRetrievalChain
 
-# Load environment variables from .env file (contains API keys)
+
 load_dotenv(override=True)
 
 
 def create_retriever() -> Any:
-    """
-    Creates and returns a document retriever based on FAISS vector store.
+    """"""
+    # PDF 문서를 로드합니다.
+    import os
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    pdf_path = os.path.join(current_dir, "data", "SPRI_AI_Brief_2023년12월호_F.pdf")
+    pdf = PDFRetrievalChain([pdf_path]).create_chain()
 
-    This function performs the following steps:
-    1. Loads a PDF document(place your PDF file in the data folder)
-    2. Splits the document into manageable chunks
-    3. Creates embeddings for each chunk
-    4. Builds a FAISS vector store from the embeddings
-    5. Returns a retriever interface to the vector store
+    # retriever와 chain을 생성합니다.
+    pdf_retriever = pdf.retriever
 
-    Returns:
-        Any: A retriever object that can be used to query the document database
-    """
-    # Step 1: Load Documents
-    # PyMuPDFLoader is used to extract text from PDF files
-    loader = PyMuPDFLoader("data/sample.pdf")
-    docs = loader.load()
-
-    # Step 2: Split Documents
-    # Recursive splitter divides documents into chunks with some overlap to maintain context
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=50)
-    split_documents = text_splitter.split_documents(docs)
-
-    # Step 3: Create Embeddings
-    # OpenAI's text-embedding-3-small model is used to convert text chunks into vector embeddings
-    embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
-
-    # Step 4: Create Vector Database
-    # FAISS is an efficient similarity search library that stores vector embeddings
-    # and allows for fast retrieval of similar vectors
-    vectorstore = FAISS.from_documents(documents=split_documents, embedding=embeddings)
-
-    # Step 5: Create Retriever
-    # The retriever provides an interface to search the vector database
-    # and retrieve documents relevant to a query
-    retriever = vectorstore.as_retriever()
-    return retriever
+    return pdf_retriever
 
 
 # Initialize FastMCP server with configuration
 mcp = FastMCP(
     "Retriever",
     instructions="A Retriever that can retrieve information from the database.",
-    host="0.0.0.0",
-    port=8005,
 )
 
 
@@ -73,8 +46,6 @@ async def retrieve(query: str) -> str:
     Returns:
         str: Concatenated text content from all retrieved documents
     """
-    # Create a new retriever instance for each query
-    # Note: In production, consider caching the retriever for better performance
     retriever = create_retriever()
 
     # Use the invoke() method to get relevant documents based on the query
