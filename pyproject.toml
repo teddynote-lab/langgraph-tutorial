@@ -20,6 +20,7 @@ dependencies = [
     "langgraph>=0.5.4",
     "langgraph-checkpoint-postgres>=2.0.23",
     "mcp>=1.12.4",
+    "neo4j-driver>=5.28.2",
     "notebook>=7.4.4",
     "pandas>=2.3.1",
     "pdfplumber>=0.11.7",
